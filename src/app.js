@@ -10,6 +10,7 @@ app.use(helmet())
 app.use(compression())
 
 //init db
+require('./database/init.mongodb')
 
 //init route
 app.get('', (req, res, next) => {
