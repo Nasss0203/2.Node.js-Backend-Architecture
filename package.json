@@ -1,0 +1,23 @@
+{
+	"name": "2.node.js-backend-architecture",
+	"version": "1.0.0",
+	"main": "server.js",
+	"scripts": {
+		"test": "echo \"Error: no test specified\" && exit 1",
+		"start": "node server.js",
+		"dev": "nodemon server.js"
+	},
+	"keywords": [],
+	"author": "",
+	"license": "ISC",
+	"description": "",
+	"dependencies": {
+		"express": "^4.19.2",
+		"nodemon": "^3.1.0"
+	},
+	"devDependencies": {
+		"compression": "^1.7.4",
+		"helmet": "^7.1.0",
+		"morgan": "^1.10.0"
+	}
+}
