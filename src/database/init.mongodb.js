@@ -1,6 +1,7 @@
 const mongosee = require('mongoose')
+const { db: { host, name, port } } = require('../configs/config.mongodb')
 
-const connectString = `mongodb+srv://anhnamnguyen0203:1234567890@cluster0.oupiinn.mongodb.net/shopDev`
+const connectString = `mongodb+srv://${host}@${port}/${name}`
 const { countConnect } = require('../helpers/check.connect')
 
 
