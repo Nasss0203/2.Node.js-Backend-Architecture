@@ -14,9 +14,7 @@ app.use(compression())
 require('./database/init.mongodb')
 
 //init route
-app.get('', (req, res, next) => {
-
-})
+app.use('/', require('./routes/index'))
 
 //handling error
 

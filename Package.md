@@ -7,3 +7,7 @@
 ## npm i compression --save-dev
 
 ## npm i mongoose --save
+
+## npm i bcrypt --save
+
+## npm i crypto --save
