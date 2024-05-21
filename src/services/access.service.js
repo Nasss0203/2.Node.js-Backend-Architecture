@@ -2,9 +2,9 @@ const shopModel = require("../models/shop.model")
 const bcrypt = require('bcrypt')
 const crypto = require('crypto')
 const KeyTokenService = require("./keyToken.service")
-const { createTokenPair } = require("../auth/authUtils")
+const { createTokenPair, verifyJWT } = require("../auth/authUtils")
 const { getInfoData } = require("../utils")
-const { BadRequestError, AuthFailureError } = require("../core/error.response")
+const { BadRequestError, AuthFailureError, ForbiddenError } = require("../core/error.response")
 const { findByEmail } = require("./shop.sevice")
 
 const RoleShop = {
@@ -16,6 +16,7 @@ const RoleShop = {
 class AccessService {
 
     /**
+     *  Login
         1 - Check email in db
         2 - Match password 
         3 - create accessToken and refreshToken and save 
@@ -104,6 +105,83 @@ class AccessService {
         const delKey = await KeyTokenService.removeKeyById(keyStore._id)
         console.log('delKey: ', delKey);
         return delKey
+    }
+
+    /**
+        check this token used
+     */
+    // static hadlerRefreshToken = async (refreshToken) => {
+    //     //check xem token da duoc su dung chua
+    //     const foundToken = await KeyTokenService.findByRefreshTokenUsed(refreshToken)
+    //     if (foundToken) {
+    //         const { userId, email } = await verifyJWT(refreshToken, foundToken.privateKey)
+    //         console.log('[1]--', { userId, email })
+    //         //xoa tat ca token trong keyStore
+    //         await KeyTokenService.deleteKeyById(userId)
+    //         throw new ForbiddenError('Something wrong happend!! Please relogin')
+    //     }
+
+    //     const holderToken = await KeyTokenService.findByRefreshToken(refreshToken)
+    //     console.log('holderToken: ', holderToken);
+    //     if (!holderToken) throw new AuthFailureError('Shop not registered 1')
+
+    //     //verify token 
+    //     const { userId, email } = await verifyJWT(refreshToken, holderToken.privateKey)
+    //     console.log('[2]--', { userId, email })
+    //     //check user _id
+    //     const foundShop = await findByEmail({ email })
+    //     if (!foundShop) throw new AuthFailureError('Shop not registered')
+
+    //     //creata 1 capjw mois
+    //     const tokens = await createTokenPair({ userId, email }, holderToken.publicKey, holderToken.privateKey)
+
+    //     //update token 
+    //     await holderToken.updateOne({
+    //         $set: {
+    //             refreshToken: tokens.refreshToken
+    //         },
+    //         $addToSet: {
+    //             refreshTokensUsed: refreshToken
+    //         }
+    //     })
+
+    //     return {
+    //         user: { userId, email },
+    //         tokens
+    //     }
+    // }
+
+    static hadlerRefreshTokenV2 = async ({ keyStore, user, refreshToken }) => {
+
+        const { userId, email } = user
+        if (keyStore.refreshTokensUsed.includes(refreshToken)) {
+            await KeyTokenService.deleteKeyById(userId)
+            throw new ForbiddenError('Something wrong happend!! Please relogin')
+        }
+
+        if (keyStore.refreshToken !== refreshToken) throw new AuthFailureError('Shop not registered') // bug
+
+        const foundShop = await findByEmail({ email })
+        if (!foundShop) throw new AuthFailureError('Shop not registered')
+
+        //creata 1 capjw mois
+        const tokens = await createTokenPair({ userId, email }, keyStore.publicKey, keyStore.privateKey)
+
+        //update token 
+        await keyStore.updateOne({
+            $set: {
+                refreshToken: tokens.refreshToken
+            },
+            $addToSet: {
+                refreshTokensUsed: refreshToken
+            }
+        })
+
+        return {
+            user,
+            tokens
+        }
+
     }
 }
 

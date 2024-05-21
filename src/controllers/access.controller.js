@@ -26,6 +26,22 @@ class AccessController {
         }).send(res)
     }
 
+    refreshToken = async (req, res, next) => {
+        // new SuccessResponse({
+        //     message: 'Get toen success!',
+        //     metadata: await AccessService.hadlerRefreshToken(req.body.refreshToken)
+        // }).send(res)
+
+        //V2
+        new SuccessResponse({
+            message: 'Get toen success!',
+            metadata: await AccessService.hadlerRefreshTokenV2({
+                refreshToken: req.refreshToken,
+                user: req.user,
+                keyStore: req.keyStore
+            })
+        }).send(res)
+    }
 }
 
 module.exports = new AccessController()
