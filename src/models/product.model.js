@@ -22,7 +22,7 @@ const productSchema = new Schema({
         required: true
     },
     product_type: {
-        type: Number,
+        type: String,
         required: true,
         enum: ['Electronics', 'Clothing', 'Furniture']
     },
@@ -41,7 +41,7 @@ const productSchema = new Schema({
 //define to product type = Clothing
 
 const clothingSchema = new Schema({
-    brand: { type: String, required: true },
+    brand: { type: String, require: true },
     size: String,
     material: String
 }, {
@@ -50,7 +50,7 @@ const clothingSchema = new Schema({
 })
 
 const electronicSchema = new Schema({
-    manufacturer: { type: String, required: true },
+    manufacturer: { type: String, require: true },
     model: String,
     color: String
 }, {
