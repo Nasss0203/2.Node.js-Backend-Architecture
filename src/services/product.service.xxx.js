@@ -1,7 +1,7 @@
 
 const { product, clothing, electronic, furniture } = require('../models/product.model')
 const { BadRequestError } = require('../core/error.response')
-const { findAllDraftsForShop, publishProductByShop, findAllPublishForShop, unPublishProductByShop, searchProductByUser } = require('../models/repositories/product.repo')
+const { findAllDraftsForShop, publishProductByShop, findAllPublishForShop, unPublishProductByShop, searchProductByUser, findAllProducts, findProductById } = require('../models/repositories/product.repo')
 // define Factory class to create product
 class ProductFactory {
     static productRegistry = {}
@@ -11,6 +11,13 @@ class ProductFactory {
     }
 
     static async createProduct(type, payload) {
+        const productClass = ProductFactory.productRegistry[type]
+        if (!productClass) throw new BadRequestError(`Invalid Product Types ${type}`)
+
+        return new productClass(payload).createProduct()
+    }
+
+    static async updateProduct(type, payload) {
         const productClass = ProductFactory.productRegistry[type]
         if (!productClass) throw new BadRequestError(`Invalid Product Types ${type}`)
 
@@ -39,7 +46,15 @@ class ProductFactory {
     }
 
     static async getListSearchProduct({ keySearch }) {
-        return searchProductByUser({ keySearch })
+        return await searchProductByUser({ keySearch })
+    }
+
+    static async findAllProducts({ limit = 50, sort = 'ctime', page = 1, filter = { isPublished: true } }) {
+        return await findAllProducts({ limit, sort, filter, page, select: ['product_name', 'product_price', 'product_thumb'] })
+    }
+
+    static async findProductById({ product_id }) {
+        return await findProductById({ product_id, unSelect: ['__v'] })
     }
 }
 
