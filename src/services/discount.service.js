@@ -192,13 +192,9 @@ class DiscountService {
 
             }
         }
-        console.log('discount_value: ', discount_value);
 
         //Check discount nay la fixed_amount hay 
         const amount = discount_type === 'fixed_amount' ? discount_value : totalOrder * (discount_value / 100)
-        console.log('totalOrder: ', totalOrder);
-        console.log('discount_value: ', discount_value);
-        console.log('amount: ', amount);
         return {
             totalOrder,
             discount: amount,
