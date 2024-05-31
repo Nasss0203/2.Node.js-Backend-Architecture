@@ -12,6 +12,8 @@
 
 ## npm i slugify --save
 
+## npm i redis@4.6.7 --save
+
 ## npm i morgan --save-dev
 
 ## npm i helmet --save-dev

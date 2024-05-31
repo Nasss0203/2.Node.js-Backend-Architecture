@@ -2,6 +2,9 @@ const { findCartById } = require("../models/repositories/cart.repo")
 const { BadRequestError, NotFoundError } = require("../core/error.response")
 const { checkProductByServer } = require("../models/repositories/product.repo")
 const { getDiscountAmount } = require('./discount.service')
+const { product } = require("../models/product.model")
+const { acquireLock, releaseLock } = require("./redis.service")
+const { order } = require("../models/order.model")
 
 class CheckoutService {
     //login and without login
@@ -96,6 +99,84 @@ class CheckoutService {
         }
     }
 
+
+    //order
+    static async orderByUser({
+        shop_order_ids,
+        cartId,
+        userId,
+        user_address = {},
+        user_payment = {}
+    }) {
+        const { shop_order_ids_new, checkout_order } = await CheckoutService.checkoutReview({
+            cartId,
+            userId,
+            shop_order_ids
+        })
+
+        //check lai lan nua xem vuot ton kho hay khong
+        //get new array products
+        const products = shop_order_ids_new.flatMap(order => order.item_products)
+        console.log('[products]: ', products);
+        const acquireProduct = []
+        for (let i = 0; i < products.length; i++) {
+            const { productId, quantity } = products[i]
+            const keyLock = await acquireLock(productId, quantity, cartId)
+            acquireProduct.push(keyLock ? true : false)
+            if (key) {
+                await releaseLock(key)
+            }
+        }
+
+        //chekc neu co mot san pham het hang trong kho
+        if (acquireProduct.includes(false)) {
+            throw new BadRequestError('Mot so san pham da duoc cap nhat, vui lon quay lai gio hang')
+        }
+
+
+        const newOrder = await order.create({
+            order_userId: userId,
+            order_checkout: checkout_order,
+            order_shipping: user_address,
+            order_payment: user_payment,
+            order_products: shop_order_ids_new
+        })
+
+        //Trường hợp: nếu insert thanh coongm thì remove product có trong cart
+        if (newOrder) {
+
+        }
+        return newOrder
+    }
+
+
+    /*
+        1. Query order [Users]
+    */
+    static async getOneOrderByUser() {
+
+    }
+
+    /*
+        2. Query order Using id [Users]
+    */
+    static async getOrderByUser() {
+
+    }
+
+    /*
+        3. Cancel order user [Users]
+    */
+    static async cancelOrderByUser() {
+
+    }
+
+    /*
+        4. Update Order Status  [Shop | Admin]
+    */
+    static async updateOrderStatusByShop() {
+
+    }
 }
 
 module.exports = CheckoutService
