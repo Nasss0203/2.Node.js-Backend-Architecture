@@ -13,7 +13,7 @@ const insertInventory = async ({
     })
 }
 
-const reservationInvenrory = async ({ productId, quantity, cartId }) => {
+const reservationInventory = async ({ productId, quantity, cartId }) => {
     const query = {
         inven_productId: convertToObjectIdMongodb(productId),
         inven_stock: { $gte: quantity },
@@ -38,5 +38,5 @@ const reservationInvenrory = async ({ productId, quantity, cartId }) => {
 
 module.exports = {
     insertInventory,
-    reservationInvenrory
+    reservationInventory
 }
