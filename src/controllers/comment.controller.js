@@ -1,5 +1,5 @@
 const { SuccessResponse } = require("../core/success.response")
-const { createComment, getCommentsByParentId } = require("../services/comment.service")
+const { createComment, getCommentsByParentId, deleteComment } = require("../services/comment.service")
 
 class CommentController {
     createComment = async (req, res, next) => {
@@ -11,8 +11,15 @@ class CommentController {
 
     getCommentsByParentId = async (req, res, next) => {
         new SuccessResponse({
-            message: "Create new comment",
+            message: "Get list comment",
             metadata: await getCommentsByParentId(req.query)
+        }).send(res)
+    }
+
+    deleteComment = async (req, res, next) => {
+        new SuccessResponse({
+            message: "Delete comment",
+            metadata: await deleteComment(req.body)
         }).send(res)
     }
 }
