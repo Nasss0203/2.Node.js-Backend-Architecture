@@ -40,7 +40,7 @@ const authentication = asyncHandler(async (req, res, next) => {
      * 2 - get accessToken
      * 3 - verifyToken
      * 4 - check user in dbs
-     * 5 - chck keyStore with this userId
+     * 5 - check keyStore with this userId
      * 6 - ok all -> return next()
      */
     const userId = req.headers[HEADER.CLIENT_ID]
@@ -71,7 +71,7 @@ const authenticationV2 = asyncHandler(async (req, res, next) => {
      * 2 - get accessToken
      * 3 - verifyToken
      * 4 - check user in dbs
-     * 5 - chck keyStore with this userId
+     * 5 - check keyStore with this userId
      * 6 - ok all -> return next()
      */
     const userId = req.headers[HEADER.CLIENT_ID]
